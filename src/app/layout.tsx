@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import "@/styles/globals.css";
 import { Header } from "@/components/header";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Send Space | Quick File Sharing",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <CustomThemeProvider>
           <Header /> {children}
         </CustomThemeProvider>
+        <Toaster position="bottom-right" reverseOrder={false} />
       </body>
     </html>
   );

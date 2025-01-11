@@ -1,15 +1,21 @@
+"use client";
 import React, { useState, useCallback } from "react";
 import { BsChatSquareText, BsCloudUpload } from "react-icons/bs";
-import { FaFileAlt } from "react-icons/fa";
+import { FaFileAlt, FaGlobe, FaLock, FaShare } from "react-icons/fa";
 import FileSelect from "./FileSelect";
 import TextForm from "./TextForm";
 import TabItem from "@/components/TabIcon";
+import OptionButton from "./OptionButton";
+import PasswordModel from "./PasswordModel";
 
 const Send = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedType, setSelectedType] = useState<"text" | "file">("text");
   const [text, setText] = useState<string>("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [password, setPassword] = useState<string>("");
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const onDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -34,7 +40,7 @@ const Send = () => {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-xl sm:mt-10">
+    <div className="mx-auto w-full max-w-xl">
       <div className="mb-4 flex w-full justify-center">
         <div className="flex gap-2 rounded-xl border border-black/10 p-1 dark:border-white/10">
           <TabItem
@@ -74,6 +80,44 @@ const Send = () => {
             ))}
           </ul>
         </div>
+      )}
+
+      <div className="mt-5 space-y-3">
+        <OptionButton
+          active={isPublic}
+          icon={<FaGlobe />}
+          titleText="Public Share"
+          subText="Anyone with the link can view"
+          onClick={() => {
+            setIsPublic(true);
+            setPassword("");
+          }}
+        />
+        <OptionButton
+          active={!isPublic}
+          icon={<FaLock />}
+          titleText="Private Share"
+          subText="Password required to see"
+          onClick={() => setShowPasswordModal(true)}
+          isPassword={true}
+        />
+      </div>
+      <div className="mt-10">
+        <TabItem
+          icon={<FaShare />}
+          active={true}
+          label="Generate Link"
+          onClick={() => null}
+        />
+      </div>
+
+      {showPasswordModal && (
+        <PasswordModel
+          password={password}
+          setIsPublic={setIsPublic}
+          setPassword={setPassword}
+          setShowPasswordModal={setShowPasswordModal}
+        />
       )}
     </div>
   );
