@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import PublicSession from "./PublicSession";
+import Session from "./Session";
 import TabItem from "@/components/TabIcon";
 import { FaArrowRight } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -13,12 +13,21 @@ export default function Receive() {
   const key = searchParams.get("key");
 
   const [linkKey, setLinkKey] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordRequired, setPasswordRequired] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (linkKey.length > 8 || linkKey.length === 0) {
       toast.error("Invalid key!");
       return;
     }
-    e.preventDefault();
+    if (linkKey === "hello1" && !password) {
+      setPasswordRequired(true);
+      return;
+    }
+    setPasswordRequired(false);
+
     if (linkKey.startsWith("https") || linkKey.startsWith("http")) {
       window.location.href = linkKey;
     } else if (linkKey.trim()) {
@@ -35,13 +44,13 @@ export default function Receive() {
     }
   };
 
-  if (!key) {
+  if (!key || passwordRequired) {
     return (
       <div className="mx-auto w-full max-w-md mt-10 p-4">
         <h2 className="text-lg font-semibold mb-2">
           Enter a Link or Receiver Key
         </h2>
-        <div className="flex gap-2 mb-7">
+        <div className="flex gap-2">
           <input
             type="text"
             value={linkKey}
@@ -56,19 +65,33 @@ export default function Receive() {
             onClick={handlePaste}
           />
         </div>
-        <TabItem
-          icon={<FaArrowRight />}
-          label="Go"
-          active={true}
-          onClick={(e: React.FormEvent) => handleSubmit(e)}
-        />
+        {passwordRequired && (
+          <div className="flex gap-2 mt-4">
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-black dark:text-white"
+              placeholder="Enter Password"
+            />
+          </div>
+        )}
+
+        <div className="mt-7">
+          <TabItem
+            icon={<FaArrowRight />}
+            label="Go"
+            active={true}
+            onClick={(e: React.FormEvent) => handleSubmit(e)}
+          />
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <PublicSession />
+      <Session />
     </>
   );
 }

@@ -41,7 +41,7 @@ export default function FileSelect({
           multiple
         />
       </label>
-      <p className="mt-2 text-sm text-gray-500">PNG, JPG, PDF up to 100MB</p>
+      <p className="mt-2 text-sm text-gray-500">PNG, JPG, PDF up to 10MB</p>
     </div>
   );
 }
