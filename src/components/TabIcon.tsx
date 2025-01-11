@@ -4,7 +4,7 @@ type Props = {
   label: string;
   icon: React.ReactNode;
   active: boolean;
-  onClick?: () => void;
+  onClick?: any;
 };
 
 export default function TabItem({ label, icon, active, onClick }: Props) {

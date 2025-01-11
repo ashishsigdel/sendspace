@@ -19,6 +19,7 @@ export default function PasswordModel({
 }: Props) {
   const { theme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-md rounded-lg bg-white dark:bg-black border border-black/20 dark:border-white/20 p-6 shadow-lg">
@@ -41,7 +42,14 @@ export default function PasswordModel({
         <div className="flex justify-end gap-2">
           <button
             className="rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 px-4 py-2"
-            onClick={() => setShowPasswordModal(false)}
+            onClick={() => {
+              if (password.trim()) {
+                setShowPasswordModal(false);
+              } else {
+                setIsPublic(true);
+                setShowPasswordModal(false);
+              }
+            }}
           >
             Cancel
           </button>
@@ -49,15 +57,26 @@ export default function PasswordModel({
             className="rounded-lg bg-blue-color px-4 py-2 text-white hover:opacity-90"
             onClick={() => {
               if (password.trim()) {
-                setIsPublic(false);
-                setShowPasswordModal(false);
-                toast.success("Password created!", {
-                  style: {
-                    borderRadius: "10px",
-                    background: theme === "dark" ? "#333" : "#fff",
-                    color: theme === "dark" ? "#fff" : "#333",
-                  },
-                });
+                if (password.length < 5) {
+                  toast("Password must be at least 5 chars!", {
+                    icon: "⚠️",
+                    style: {
+                      borderRadius: "10px",
+                      background: theme === "dark" ? "#333" : "#fff",
+                      color: theme === "dark" ? "#fff" : "#333",
+                    },
+                  });
+                } else {
+                  setIsPublic(false);
+                  setShowPasswordModal(false);
+                  toast.success("Password created!", {
+                    style: {
+                      borderRadius: "10px",
+                      background: theme === "dark" ? "#333" : "#fff",
+                      color: theme === "dark" ? "#fff" : "#333",
+                    },
+                  });
+                }
               } else {
                 toast("Password cannot empty!", {
                   icon: "⚠️",

@@ -40,9 +40,9 @@ const Send = () => {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-xl">
+    <div className="mx-auto w-full max-w-xl lg:max-w-2xl">
       <div className="mb-4 flex w-full justify-center">
-        <div className="flex gap-2 rounded-xl border border-black/10 p-1 dark:border-white/10">
+        <div className="flex gap-2 rounded-xl border border-black/10 p-1 dark:border-white/10 bg-white dark:bg-gray-950">
           <TabItem
             label="Text"
             icon={<BsChatSquareText />}
@@ -100,6 +100,7 @@ const Send = () => {
           subText="Password required to see"
           onClick={() => setShowPasswordModal(true)}
           isPassword={true}
+          password={password}
         />
       </div>
       <div className="mt-10">

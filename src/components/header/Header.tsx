@@ -14,7 +14,7 @@ export default function Header() {
   };
 
   return (
-    <div className="flex h-[96px] items-center border-b border-black/10 shadow-sm shadow-black/10 dark:border-white/10 dark:shadow-white/5">
+    <div className="flex h-[72px] md:h-[96px] items-center border-b border-black/10 shadow-sm shadow-black/10 dark:border-white/10 dark:shadow-white/5 z-[9999]">
       <div className="mx-auto w-full max-w-7xl px-5">
         <div className="flex items-center justify-between">
           <Link href={"/"} className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export default function Header() {
             </h2>
           </Link>
           <div className="flex items-center gap-x-5">
-            <Link href={"/transfer"}>
+            <Link href={"/t/send"}>
               <label
                 className={`${
                   isActive("transfer")

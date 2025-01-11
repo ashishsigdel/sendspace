@@ -7,6 +7,7 @@ type Props = {
   subText: string;
   onClick: () => void;
   isPassword?: boolean;
+  password?: string;
 };
 
 export default function OptionButton({
@@ -16,6 +17,7 @@ export default function OptionButton({
   subText,
   onClick,
   isPassword,
+  password,
 }: Props) {
   return (
     <div
@@ -39,7 +41,7 @@ export default function OptionButton({
           </p>
         </div>
       </div>
-      {isPassword && <div className="">Edit</div>}
+      {isPassword && password && <div className="">Edit</div>}
     </div>
   );
 }

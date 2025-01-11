@@ -12,7 +12,7 @@ export default function page() {
           Share Anything, Anytime. Upload files or paste text, generate a link,
           and send it instantly.
         </p>
-        <Link href={"/transfer"}>
+        <Link href={"/t/send"}>
           <button className="mt-6 rounded-md bg-blue-600 px-6 py-3 text-lg text-white hover:bg-blue-700">
             Quick Share
           </button>
