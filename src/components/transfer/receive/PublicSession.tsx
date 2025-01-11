@@ -1,5 +1,6 @@
+import TabItem from "@/components/TabIcon";
 import React, { useState } from "react";
-import { FaGlobe, FaUser } from "react-icons/fa";
+import { FaDownload, FaGlobe, FaUser } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
 
 export default function PublicSession() {
@@ -20,13 +21,21 @@ export default function PublicSession() {
 
   return (
     <div>
-      <div className="flex items-center gap-3">
-        <FaUser />
-        <p>Shared by anonymous</p>
-        <div className="flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 cursor-pointer">
-          <FaGlobe />
-          Public
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <FaUser />
+          <p>Shared by anonymous</p>
+          <div className="flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 cursor-pointer">
+            <FaGlobe />
+            Public
+          </div>
         </div>
+        <TabItem
+          icon={<FaDownload />}
+          label="Download all"
+          onClick={() => null}
+          active
+        />
       </div>
       <div className="mt-10">
         <div className="flex justify-between border-b border-black/10 dark:border-white/10 p-3">
