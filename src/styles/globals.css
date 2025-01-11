@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* styles/globals.css */
+html {
+  transition: all 0.3s;
+}
+
+html.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+html.dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+body {
+  font-family: "Sofia Sans", serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
