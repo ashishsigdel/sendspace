@@ -34,16 +34,14 @@ export default function Receive() {
       key = linkKey;
     }
     if (key) {
-      router.push(`/t/receive?key=${key}`);
       fetchSession(key);
+      router.push(`/t/receive?key=${key}`);
     }
   };
 
   const fetchSession = async (key: string) => {
-    if (!key) {
-      return;
-    }
     try {
+      setLoading(true);
       const response = await myAxios.post("/receive", {
         sessionId: key,
       });
@@ -51,19 +49,17 @@ export default function Receive() {
       if (response.data.data.visibility === "public") {
         setSession(response.data.data);
         fetchContent(key);
-        router.push(`/t/receive?key=${response.data.data.sessionId}`);
       } else {
         setPasswordRequired(true);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchContent = async (password?: string) => {
-    if (!key) {
-      return;
-    }
     setLoading(true);
     try {
       const response = await myAxios.post(`/receive/${key}`, {
@@ -74,7 +70,7 @@ export default function Receive() {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
