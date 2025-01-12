@@ -6,9 +6,9 @@ const syncDatabase = async () => {
     console.log("Database connected successfully.");
 
     await sequelize.sync({ alter: true }); // Use { force: true } to reset tables
-    console.log("All models synchronized.");
+    console.log("✅ All models synchronized.");
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.log("❌ Unable to connect to the database:");
   }
 };
 
