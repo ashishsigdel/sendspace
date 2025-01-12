@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
 import Session from "@/models/session";
+import Content from "@/models/content";
 
 const sequelize: any = new Sequelize({
   host: process.env.DB_HOST,
@@ -16,7 +17,7 @@ const sequelize: any = new Sequelize({
   },
   logging: false,
   benchmark: true,
-  models: [Session],
+  models: [Session, Content],
 });
 
 export default sequelize;

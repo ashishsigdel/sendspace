@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+// import type Content from "./content";
 
 @Table({
   tableName: "Sessions",
@@ -17,7 +18,7 @@ class Session extends Model {
   sessionId!: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.ENUM("public", "private"),
     allowNull: false,
     defaultValue: "public",
   })
@@ -25,8 +26,12 @@ class Session extends Model {
 
   @Column({
     type: DataType.STRING(150),
+    allowNull: true,
   })
   password!: string;
+
+  // @HasMany(() => Content)
+  // content!: Content;
 }
 
 export default Session;

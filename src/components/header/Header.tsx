@@ -28,7 +28,7 @@ export default function Header() {
             <Link href={"/t/send"}>
               <label
                 className={`${
-                  isActive("transfer")
+                  isActive("t")
                     ? "text-blue-color font-semibold"
                     : "font-normal"
                 } cursor-pointer`}
@@ -36,7 +36,7 @@ export default function Header() {
                 Transfer
               </label>
             </Link>
-            <Link href={"/"}>
+            {/* <Link href={"/"}>
               <label
                 className={`${
                   isActive("receive")
@@ -51,7 +51,7 @@ export default function Header() {
                   size={14}
                 />
               </label>
-            </Link>
+            </Link> */}
             <ThemeToggle />
           </div>
         </div>

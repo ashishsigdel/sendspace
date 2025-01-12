@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { MdContentPaste } from "react-icons/md";
+import { MdContentPaste, MdError } from "react-icons/md";
 
 type Props = {
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  textError: string | null;
+  validateText: any;
 };
 
-export default function TextForm({ text, setText }: Props) {
+export default function TextForm({
+  text,
+  setText,
+  textError,
+  validateText,
+}: Props) {
   const [pasting, setPasting] = useState(false);
 
   const handlePaste = async () => {
@@ -22,7 +29,9 @@ export default function TextForm({ text, setText }: Props) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center">
       <div
-        className={`relative w-full rounded-lg border-2 border-gray-300 bg-transparent shadow-sm transition-all duration-200 focus-within:border-blue-500 dark:border-gray-700 dark:focus-within:border-blue-500`}
+        className={`relative w-full rounded-lg border-2 ${
+          textError ? "border-red-500" : "border-gray-300 dark:border-gray-700"
+        }  bg-transparent shadow-sm transition-all duration-200 focus-within:border-blue-500 dark:focus-within:border-blue-500`}
       >
         {/* Paste Button */}
         <button
@@ -44,7 +53,16 @@ export default function TextForm({ text, setText }: Props) {
           onChange={(e) => setText(e.target.value)}
           className={`w-full resize-none rounded-lg border-none bg-transparent p-4 text-gray-800 focus:outline-none dark:text-gray-200 dark:placeholder-gray-500`}
           placeholder="Write your thoughts here..."
+          onBlur={validateText}
         />
+      </div>
+      <div className="w-full flex gap-1 items-center mt-2">
+        {textError && (
+          <>
+            <MdError size={20} color="red" />
+            <p className="text-sm text-red-500">{textError}</p>
+          </>
+        )}
       </div>
     </div>
   );

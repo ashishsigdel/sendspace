@@ -17,6 +17,10 @@ export default function FileSelect({
   onFileSelect,
 }: Props) {
   return (
+    <div className="w-full text-center my-32 text-2xl">Comming Soon...</div>
+  );
+
+  return (
     <div
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}

@@ -7,12 +7,22 @@ import TextForm from "./TextForm";
 import TabItem from "@/components/TabIcon";
 import OptionButton from "./OptionButton";
 import PasswordModel from "./PasswordModel";
+import { myAxios } from "@/services/apiServices";
+import toast from "react-hot-toast";
+import Response from "./Response";
 
 const Send = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedType, setSelectedType] = useState<"text" | "file">("text");
   const [text, setText] = useState<string>("");
+  const [textError, setTextError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<{
+    sessionId: string;
+    visibility: string;
+  } | null>(null);
+
   const [isPublic, setIsPublic] = useState(true);
   const [password, setPassword] = useState<string>("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -39,6 +49,45 @@ const Send = () => {
     setFiles((prev) => [...prev, ...selectedFiles]);
   }, []);
 
+  const validateText = () => {
+    if (!text) {
+      setTextError("Text is required!");
+      return;
+    } else {
+      setTextError("");
+    }
+  };
+
+  const handleSend = async () => {
+    validateText();
+    if (text && !textError) {
+      try {
+        const response = await myAxios.post("/transfer", {
+          text,
+          visibility: isPublic ? "public" : "private",
+          password: password,
+        });
+        setResponse(response.data.data);
+        setText("");
+      } catch (error: any) {
+        throw error?.response?.data?.message || "Something went wrong!";
+      }
+    } else {
+      throw textError;
+    }
+  };
+
+  const generatingLink = async () => {
+    toast.promise(handleSend(), {
+      loading: "Generating Link...",
+      success: "Link Generated Successfully",
+      error: (err: string) => err,
+    });
+  };
+
+  if (response) {
+    return <Response response={response} setResponse={setResponse} />;
+  }
   return (
     <div className="mx-auto w-full max-w-xl lg:max-w-2xl">
       <div className="mb-4 flex w-full justify-center">
@@ -58,7 +107,12 @@ const Send = () => {
         </div>
       </div>
       {selectedType === "text" ? (
-        <TextForm text={text} setText={setText} />
+        <TextForm
+          text={text}
+          setText={setText}
+          textError={textError}
+          validateText={validateText}
+        />
       ) : (
         <FileSelect
           onDragLeave={onDragLeave}
@@ -82,35 +136,39 @@ const Send = () => {
         </div>
       )}
 
-      <div className="mt-5 space-y-3">
-        <OptionButton
-          active={isPublic}
-          icon={<FaGlobe />}
-          titleText="Public Share"
-          subText="Anyone with the link can view"
-          onClick={() => {
-            setIsPublic(true);
-            setPassword("");
-          }}
-        />
-        <OptionButton
-          active={!isPublic}
-          icon={<FaLock />}
-          titleText="Private Share"
-          subText="Password required to see"
-          onClick={() => setShowPasswordModal(true)}
-          isPassword={true}
-          password={password}
-        />
-      </div>
-      <div className="mt-10">
-        <TabItem
-          icon={<FaShare />}
-          active={true}
-          label="Generate Link"
-          onClick={() => null}
-        />
-      </div>
+      {selectedType === "text" && (
+        <>
+          <div className="mt-5 space-y-3">
+            <OptionButton
+              active={isPublic}
+              icon={<FaGlobe />}
+              titleText="Public Share"
+              subText="Anyone with the link can view"
+              onClick={() => {
+                setIsPublic(true);
+                setPassword("");
+              }}
+            />
+            <OptionButton
+              active={!isPublic}
+              icon={<FaLock />}
+              titleText="Private Share"
+              subText="Password required to see"
+              onClick={() => setShowPasswordModal(true)}
+              isPassword={true}
+              password={password}
+            />
+          </div>
+          <div className="mt-10">
+            <TabItem
+              icon={<FaShare />}
+              active={true}
+              label="Generate Link"
+              onClick={() => generatingLink()}
+            />
+          </div>
+        </>
+      )}
 
       {showPasswordModal && (
         <PasswordModel
