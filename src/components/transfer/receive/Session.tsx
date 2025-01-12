@@ -36,12 +36,12 @@ export default function PublicSession({ content, session }: Props) {
             {session.visibility}
           </div>
         </div>
-        <TabItem
+        {/* <TabItem
           icon={<FaDownload />}
           label="Download all"
           onClick={() => null}
           active
-        />
+        /> */}
       </div>
       <div className="mt-10">
         {content.map((file) => (
@@ -83,7 +83,10 @@ export default function PublicSession({ content, session }: Props) {
                   </button>
 
                   <textarea
-                    rows={8}
+                    rows={Math.min(
+                      Math.max(file.text.split("\n").length + 2, 8),
+                      20
+                    )}
                     value={file.text}
                     onChange={() => null}
                     className={`w-full resize-none rounded-lg border-none bg-transparent p-4 text-gray-800 focus:outline-none dark:text-gray-200 dark:placeholder-gray-500`}
