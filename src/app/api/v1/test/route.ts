@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import Session from "@/models/session";
+import syncDatabase from "@/utils/dbSync";
 
 export async function GET(req: NextRequest) {
-  return NextResponse.json({ messsage: "hello world" });
+  syncDatabase();
+  const total = await Session.count();
+  return NextResponse.json({ messsage: "hello world", totalSession: total });
 }
