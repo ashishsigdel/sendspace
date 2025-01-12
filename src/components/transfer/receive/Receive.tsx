@@ -5,6 +5,8 @@ import Session from "./Session";
 import TabItem from "@/components/TabIcon";
 import { FaArrowRight } from "react-icons/fa";
 import toast from "react-hot-toast";
+import EnterKey from "./EnterKey";
+import { myAxios } from "@/services/apiServices";
 
 export default function Receive() {
   const router = useRouter();
@@ -15,83 +17,96 @@ export default function Receive() {
   const [linkKey, setLinkKey] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRequired, setPasswordRequired] = useState(false);
+  const [session, setSession] = useState(null);
+  const [content, setContent] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (linkKey.length > 8 || linkKey.length === 0) {
-      toast.error("Invalid key!");
-      return;
-    }
-    if (linkKey === "hello1" && !password) {
-      setPasswordRequired(true);
-      return;
-    }
-    setPasswordRequired(false);
-
+    let key: string | null = null;
     if (linkKey.startsWith("https") || linkKey.startsWith("http")) {
-      window.location.href = linkKey;
+      try {
+        const url = new URL(linkKey);
+        key = url.searchParams.get("key");
+      } catch (error) {
+        console.error("Invalid URL format");
+      }
     } else if (linkKey.trim()) {
-      router.push(`/t/receive?key=${encodeURIComponent(linkKey)}`);
+      key = linkKey;
+    }
+    if (key) {
+      router.push(`/t/receive?key=${key}`);
+      fetchSession(key);
     }
   };
 
-  const handlePaste = async () => {
+  const fetchSession = async (key: string) => {
+    if (!key) {
+      return;
+    }
     try {
-      const text = await navigator.clipboard.readText();
-      setLinkKey(text);
-    } catch (err) {
-      console.error("Failed to read clipboard contents: ", err);
+      const response = await myAxios.post("/receive", {
+        sessionId: key,
+      });
+
+      if (response.data.data.visibility === "public") {
+        setSession(response.data.data);
+        fetchContent(key);
+        router.push(`/t/receive?key=${response.data.data.sessionId}`);
+      } else {
+        setPasswordRequired(true);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  if (!key || passwordRequired) {
-    return (
-      <div className="mx-auto w-full max-w-md mt-10 p-4">
-        <h2 className="text-lg font-semibold mb-2">
-          Enter a Link or Receiver Key
-        </h2>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={linkKey}
-            onChange={(e) => setLinkKey(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-black dark:text-white"
-            placeholder="Paste URL or Receiver Key"
-          />
-          <TabItem
-            icon={<></>}
-            label="Paste"
-            active={true}
-            onClick={handlePaste}
-          />
-        </div>
-        {passwordRequired && (
-          <div className="flex gap-2 mt-4">
-            <input
-              type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-black dark:text-white"
-              placeholder="Enter Password"
-            />
-          </div>
-        )}
+  const fetchContent = async (password?: string) => {
+    if (!key) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await myAxios.post(`/receive/${key}`, {
+        password: password,
+      });
+      setSession(response.data.data.session);
+      setContent(response.data.data.content);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <div className="mt-7">
-          <TabItem
-            icon={<FaArrowRight />}
-            label="Go"
-            active={true}
-            onClick={(e: React.FormEvent) => handleSubmit(e)}
-          />
-        </div>
-      </div>
+  useEffect(() => {
+    if (key) {
+      setLinkKey(key);
+      fetchSession(key);
+    }
+  }, []);
+
+  if (!session || !key) {
+    return (
+      <EnterKey
+        linkKey={linkKey}
+        setLinkKey={setLinkKey}
+        password={password}
+        passwordRequired={passwordRequired}
+        setPassword={setPassword}
+        handleSubmit={
+          passwordRequired ? () => fetchContent(password) : handleSubmit
+        }
+      />
     );
   }
 
-  return (
-    <>
-      <Session />
-    </>
-  );
+  if (content) {
+    return <Session content={content} session={session} />;
+  }
+
+  if (loading) {
+    return <>Loading</>;
+  }
+
+  return <>Unable to fetch</>;
 }

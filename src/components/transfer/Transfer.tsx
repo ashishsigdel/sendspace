@@ -12,9 +12,6 @@ export default function Transfer() {
   const router = useRouter();
   const params = useParams<{ tab: string }>();
 
-  const key = searchParams.get("receivekey");
-  const [selectedTab, setSelectedTab] = useState<"send" | "receive">("send");
-
   const handleSelectSend = () => {
     router.push("/t/send");
   };
