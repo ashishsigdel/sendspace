@@ -1,3 +1,4 @@
+import { handlePaste } from "@/utils/copypaste";
 import React, { useState } from "react";
 import { MdContentPaste, MdError } from "react-icons/md";
 
@@ -16,16 +17,6 @@ export default function TextForm({
 }: Props) {
   const [pasting, setPasting] = useState(false);
 
-  const handlePaste = async () => {
-    try {
-      const clipboardText = await navigator.clipboard.readText();
-      setText((prev: string) => prev + clipboardText); // Ensure 'prev' is typed as string
-      setPasting(true);
-      setTimeout(() => setPasting(false), 1500);
-    } catch (error) {
-      console.error("Failed to paste", error);
-    }
-  };
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center">
       <div
@@ -36,7 +27,7 @@ export default function TextForm({
         {/* Paste Button */}
         <button
           type="button"
-          onClick={handlePaste}
+          onClick={() => handlePaste(setText, setPasting)}
           aria-label="Paste from clipboard"
           className={`absolute right-2 top-2 flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 transition-all hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 ${
             pasting ? "text-blue-500" : "text-gray-700"

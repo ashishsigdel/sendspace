@@ -5,20 +5,10 @@ import { FaArrowRight } from "react-icons/fa";
 type Props = {
   linkKey: string;
   setLinkKey: any;
-  passwordRequired: boolean;
-  password: string;
-  setPassword: any;
   handleSubmit: any;
 };
 
-export default function EnterKey({
-  linkKey,
-  setLinkKey,
-  password,
-  passwordRequired,
-  setPassword,
-  handleSubmit,
-}: Props) {
+export default function EnterKey({ linkKey, setLinkKey, handleSubmit }: Props) {
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -47,17 +37,6 @@ export default function EnterKey({
           onClick={handlePaste}
         />
       </div>
-      {passwordRequired && (
-        <div className="flex gap-2 mt-4">
-          <input
-            type="text"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-black dark:text-white"
-            placeholder="Enter Password"
-          />
-        </div>
-      )}
 
       <div className="mt-7">
         <TabItem
