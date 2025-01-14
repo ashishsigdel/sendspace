@@ -6,66 +6,75 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   await syncDatabase();
+
   try {
     const pathParts = req.nextUrl.pathname.split("/");
     const sessionId = pathParts[pathParts.length - 1];
+
     if (!sessionId) {
       return NextResponse.json(
         { message: "Invalid request. sessionId missing." },
         { status: 400 }
       );
     }
-    const sessionExists = await Session.findOne({
-      where: { sessionId },
-    });
 
-    if (!sessionExists) {
-      return NextResponse.json({ message: "Link not found." }, { status: 400 });
+    const session = await Session.findOne({ where: { sessionId } });
+    if (!session) {
+      return NextResponse.json(
+        { message: "Session not found." },
+        { status: 404 }
+      );
     }
 
-    if (sessionExists.visibility === "private") {
+    let isPasswordValid = true;
+    let validationMessage = null;
+
+    if (session.visibility === "private") {
       const { password } = await req.json();
       if (!password) {
-        return NextResponse.json(
-          { message: "Password is required." },
-          { status: 400 }
-        );
-      }
-
-      const checkPassword = await comparePassword(
-        password,
-        sessionExists.password
-      );
-
-      if (!checkPassword) {
-        return NextResponse.json(
-          { message: "Invalid password." },
-          { status: 400 }
-        );
+        isPasswordValid = false;
+        validationMessage = "Password required.";
+      } else {
+        isPasswordValid = await comparePassword(password, session.password);
+        if (!isPasswordValid) {
+          validationMessage = "Invalid password.";
+        }
       }
     }
 
-    let responseData = {
-      session: await Session.findOne({
-        where: { sessionId },
-        attributes: ["id", "sessionId", "visibility", "createdAt"],
-      }),
-      content: await Content.findAll({
-        where: {
-          sessionId: sessionExists.id,
-        },
-        attributes: ["id", "sessionId", "text"],
-      }),
+    const responseData = {
+      session: {
+        id: session.id,
+        sessionId: session.sessionId,
+        visibility: session.visibility,
+        createdAt: session.createdAt,
+      },
+      content: isPasswordValid
+        ? {
+            status: "ok",
+            data: await Content.findAll({
+              where: { sessionId: session.id },
+              attributes: ["id", "sessionId", "text"],
+            }),
+          }
+        : {
+            status: validationMessage,
+            data: null,
+          },
     };
 
     return NextResponse.json({
-      message: "Fetched data",
+      message: isPasswordValid ? "Fetched data" : "Password validation failed",
       data: responseData,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Error fetching session data:", error);
     return NextResponse.json(
-      { message: "Error happens", error: error },
-      { status: 400 }
+      {
+        message: "An error occurred while processing your request.",
+        error: error.message,
+      },
+      { status: 500 }
     );
   }
 }

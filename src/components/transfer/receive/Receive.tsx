@@ -15,11 +15,6 @@ export default function Receive() {
   const key = searchParams.get("key");
 
   const [linkKey, setLinkKey] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordRequired, setPasswordRequired] = useState(false);
-  const [session, setSession] = useState(null);
-  const [content, setContent] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     let key: string | null = null;
@@ -28,81 +23,27 @@ export default function Receive() {
         const url = new URL(linkKey);
         key = url.searchParams.get("key");
       } catch (error) {
-        console.error("Invalid URL format");
+        toast.error("Invalid URL format");
       }
     } else if (linkKey.trim()) {
       key = linkKey;
     }
     if (key) {
-      fetchSession(key);
       router.push(`/t/receive?key=${key}`);
+    } else {
+      toast.error("Invalid URL format");
     }
   };
 
-  const fetchSession = async (key: string) => {
-    try {
-      setLoading(true);
-      const response = await myAxios.post("/receive", {
-        sessionId: key,
-      });
-
-      if (response.data.data.visibility === "public") {
-        setSession(response.data.data);
-        fetchContent(key);
-      } else {
-        setPasswordRequired(true);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchContent = async (password?: string) => {
-    setLoading(true);
-    try {
-      const response = await myAxios.post(`/receive/${key}`, {
-        password: password,
-      });
-      setSession(response.data.data.session);
-      setContent(response.data.data.content);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      // setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (key) {
-      setLinkKey(key);
-      fetchSession(key);
-    }
-  }, []);
-
-  if (!session || !key) {
+  if (!key) {
     return (
       <EnterKey
         linkKey={linkKey}
         setLinkKey={setLinkKey}
-        password={password}
-        passwordRequired={passwordRequired}
-        setPassword={setPassword}
-        handleSubmit={
-          passwordRequired ? () => fetchContent(password) : handleSubmit
-        }
+        handleSubmit={handleSubmit}
       />
     );
   }
 
-  if (content) {
-    return <Session content={content} session={session} />;
-  }
-
-  if (loading) {
-    return <>Loading</>;
-  }
-
-  return <>Unable to fetch</>;
+  return <Session />;
 }
